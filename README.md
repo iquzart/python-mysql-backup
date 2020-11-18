@@ -14,7 +14,7 @@ Features
 Configuration
 --------------
 
-[DBINFO]
+-   DBINFO
 | Variable | Description | sample |
 | --- | --- | ---|
 | db_name |  Database Names, comma-separated values | demo,demo1,demo2   |
@@ -24,7 +24,7 @@ Configuration
 | password |  Database Password   |    |
 
 
-[BACKUP_CONF]
+-   BACKUP_CONF
 | Variable | Description | sample |
 | --- | --- | ---|
 | backup_dir  |  Local Backup Directory   |  /tmp/mysql-backup  |
@@ -34,7 +34,7 @@ Configuration
 | success_notification  |  Enabled backup success notification   |  False  |
 | backup_file_size_unit  |  Backup file size in KB, MB, GB, None(bytes)   |  MB  |
 
-[ARCHIVE_AZURE] 
+-   ARCHIVE_AZURE
 | Variable | Description | sample |
 | --- | --- | ---|
 |  account_name   |  Storage Account Name   |  demostgacc  |
