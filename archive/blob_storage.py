@@ -15,6 +15,6 @@ class AzureBlobStorage:
         
         with open(dump_path, "rb") as data:
            result = self.__blob_client.upload_blob(data, blob_type="BlockBlob")
-        print(result)
+        #print(result)
         print('Successfully uploaded the backup {} to blob container {}'.format(file_name, container_name))
         
