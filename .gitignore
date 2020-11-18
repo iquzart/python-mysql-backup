@@ -1,3 +1,4 @@
 .env
 config.ini
-rchive/__pycache__/*
+config_main.ini
+archive/__pycache__/*
