@@ -36,3 +36,13 @@ MySQL or MariaDB backup script.
 1. Notification (Slack, Email, Teams)
 2. Logging
 ```
+
+License
+-------
+
+MIT
+
+Author Information
+------------------
+
+Muhammed Iqbal <iquzart@hotmail.com>
