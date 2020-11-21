@@ -37,8 +37,5 @@ class NotifySlack:
             'blocks': blocks if blocks else None
         }).json()
         
-        if result['ok']:
-            logging.debug('sent a notification to {} channel'.format(self.slack_channel) )
-        else:
-            logging.debug("Failed sending notification, Error message - '{}'".format(result['error']))
+        return result
 
