@@ -6,10 +6,16 @@
 
 """
 import os
+import gzip
 import time
+import shlex
+import logging
 import datetime
+import subprocess
+
 from configparser import ConfigParser
 from archive.blob_storage import AzureBlobStorage
+from notification.slack import NotifySlack
 
     
 def db_backup(Config):
@@ -27,35 +33,50 @@ def db_backup(Config):
     archive_type = backupConf.get('archive_type')
     notification_channel = backupConf.get('notification_channel')
     success_notification = backupConf.get('success_notification')
-    compress_backup = backupConf.get('compress_backup')   
     file_size_unit = backupConf.get('backup_file_size_unit') 
     
     time_formate = (time.strftime('%m%d%Y-%H%M%S'))
 
     if not os.path.exists(backup_dir):
-        print('Creating backup directory {}'.format(backup_dir))
+        logging.debug('Creating backup directory {}'.format(backup_dir))
         os.makedirs(backup_dir)
 
     for db in db_list:
         
-        if (compress_backup == 'True' or compress_backup == 'on'):
+        dumpcmd = "mysqldump -u " + db_user + " -h " + db_host + " -P " + db_port + " -p" + db_password +" "+ db
+
+        logging.debug('Creating backup for database: {}'.format(db))
+
+        process = subprocess.run(shlex.split(dumpcmd), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        data = process.stdout    
+
+        if  len(process.stderr) == 0:
+
+            logging.debug('Creatting Zip file')
+
             file_name  = db + "-" + time_formate + ".sql.gz"
             dump_path = backup_dir + "/" + file_name
-            dumpcmd = "mysqldump -u " + db_user + " -h " + db_host + " -P " + db_port + " -p" + db_password +" "+ db + " | gzip >" + dump_path  
-        else:           
-            file_name  = db + "-" + time_formate + ".sql"
-            dump_path = backup_dir + "/" + file_name
-            dumpcmd = "mysqldump -u " + db_user + " -h " + db_host + " -P " + db_port + " -p" + db_password +" "+ db + ">" + dump_path              
+            with gzip.open(dump_path, 'wb') as f:
+                f.write(data)
             
-        print('Creating backup for database: {}'.format(db))
-
-        os.system(dumpcmd)	
-        size = backup_file_size(dump_path, file_size_unit)
-        print('Backup completed, the file size is: {}'.format(size))
+            # Calulate Size
+            size = backup_file_size(dump_path, file_size_unit)
+            logging.debug('Backup completed, the file size is: {}'.format(size))
+            
+            # Archive   
+            if 'blob' in archive_type.lower():
+                logging.debug('Updoading DB: {}'.format(db))
+                azure_blob(file_name, dump_path, Config)
         
-        # Archive        
-        if 'blob' in archive_type.lower():
-            azure_blob(file_name, dump_path, Config)
+        
+        else: 
+            err = process.stderr.decode()
+            logging.error(err)
+            
+            notification_slack(Config, db)
+
+
+
 
 def backup_file_size(dump_path, file_size_unit):
 
@@ -79,12 +100,26 @@ def azure_blob(file_name, dump_path, Config):
     
     AzureBlobStorage(account_name, account_key, container_name, file_name).upload(dump_path, file_name, container_name)
     
+def notification_slack(Config, db):
+    
+    slackConf = Config["NOTIIFICAION_SLACK"]    
 
+    slack_token = slackConf.get('slack_token')
+    slack_channel = slackConf.get('slack_channel')
+    slack_icon_url = slackConf.get('slack_icon_url')
+    
+    NotifySlack(slack_token, slack_channel, slack_icon_url, db).failure_message()
 
 def main():
+       
     # Read config.ini file
     Config = ConfigParser()
     Config.read("config_main.ini")
+
+    logging.basicConfig(format='%(asctime)s - %(message)s',
+                        datefmt='%Y-%m-%d %H:%M:%S',
+                        level=logging.DEBUG)
+
 
     db_backup(Config)
 

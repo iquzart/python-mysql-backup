@@ -1,4 +1,7 @@
+import logging
 from azure.storage.blob import BlobServiceClient
+
+logging = logging.getLogger(__name__)
 
 class AzureBlobStorage:
     def __init__(self, account_name, account_key, container_name, file_name):
@@ -11,10 +14,10 @@ class AzureBlobStorage:
 
     def upload(self, dump_path, file_name, container_name):
         
-        print('Uploading the backup to Azure blob')
+        logging.debug('Uploading the backup to Azure blob')
         
         with open(dump_path, "rb") as data:
            result = self.__blob_client.upload_blob(data, blob_type="BlockBlob")
-        #print(result)
-        print('Successfully uploaded the backup {} to blob container {}'.format(file_name, container_name))
+           
+        logging.debug("Successfully uploaded the backup '{}' to blob container '{}'".format(file_name, container_name))
         

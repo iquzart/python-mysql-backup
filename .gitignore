@@ -2,3 +2,4 @@
 config.ini
 config_main.ini
 archive/__pycache__/*
+notification/__pycache__/*
