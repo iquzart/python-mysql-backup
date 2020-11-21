@@ -49,8 +49,8 @@ ToDo
 -----
 
 ```
-1. Notification (Slack, Email, Teams)
-2. Logging
+1. Notification (~~Slack~~, Email, Teams)
+2. ~~Logging~~
 ```
 
 License

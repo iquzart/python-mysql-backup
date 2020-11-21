@@ -76,8 +76,6 @@ def db_backup(Config):
             notification_slack(Config, db)
 
 
-
-
 def backup_file_size(dump_path, file_size_unit):
 
     size = os.path.getsize(dump_path) 
