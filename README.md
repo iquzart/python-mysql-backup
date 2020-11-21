@@ -48,10 +48,14 @@ Variable Group: ARCHIVE_AZURE
 ToDo
 -----
 
-```
-1. Notification (~~Slack~~, Email, Teams)
+
+1. Notification 
+    1. ~~Slack~~
+    2. Email
+    3. Teams
+    
 2. ~~Logging~~
-```
+
 
 License
 -------
