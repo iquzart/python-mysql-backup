@@ -6,9 +6,10 @@ MySQL or MariaDB backup script.
 Features
 ---------
 
-1. Multiple DB support
-2. Backup Archive to Azure Blob Storage
-3. Notification - Slack, Email, Teams
+1. Configurable 
+2. Multiple DB support
+3. Backup Archive to Azure Blob Storage
+4. Notification - Slack
 
 
 Configuration
@@ -45,6 +46,17 @@ Variable Group: ARCHIVE_AZURE
 |  account_key   |   Storage Account key  |    |
 |  container_name   |  Blob container Name   | mysqlbackup   |
 
+
+Variable Group: NOTIIFICAION_SLACK
+
+| Variable | Description | sample |
+| --- | --- | ---|
+| slack_token  | Slack BOT Token |  | 
+| slack_channel | Slack Notification Channel | |
+| slack_icon_url | Company or Application | |
+| notification_description | Application or Business Unit Name | |
+
+
 ToDo
 -----
 
@@ -53,9 +65,8 @@ ToDo
     1. ~~Slack~~
     2. Email
     3. Teams
-    
-2. ~~Logging~~
-
+2. Archive location
+    1. AWS s3
 
 License
 -------
