@@ -153,7 +153,7 @@ def notification_slack(Config, **notfication_data):
                     Config (sectionproxy): database details from configparser
                     notfication_data (dict): all vars to create slack block message.
     """      
-    slackConf = Config["NOTIIFICAION_SLACK"]
+    slackConf = Config["NOTIFICAION_SLACK"]
     slack_token = slackConf.get('slack_token')
     slack_channel = slackConf.get('slack_channel')
     slack_icon_url = slackConf.get('slack_icon_url')
@@ -220,8 +220,4 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
-
-    
     
