@@ -9,6 +9,8 @@ chardet==3.0.4
 cryptography==3.2.1
 idna==2.10
 isodate==0.6.0
+Jinja2==3.0.1
+MarkupSafe==2.0.1
 msrest==0.6.19
 multidict==5.0.2
 oauthlib==3.1.0

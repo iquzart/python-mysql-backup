@@ -6,6 +6,7 @@
 
 """
 import os
+import sys
 import gzip
 import time
 import shlex
@@ -152,7 +153,7 @@ def notification_slack(Config, **notfication_data):
                     Config (sectionproxy): database details from configparser
                     notfication_data (dict): all vars to create slack block message.
     """      
-    slackConf = Config["NOTIIFICAION_SLACK"]
+    slackConf = Config["NOTIFICAION_SLACK"]
     slack_token = slackConf.get('slack_token')
     slack_channel = slackConf.get('slack_channel')
     slack_icon_url = slackConf.get('slack_icon_url')
@@ -171,20 +172,28 @@ def notification_slack(Config, **notfication_data):
         logging.debug("Failed sending notification, Error message - '{}'".format(result['error']))
 
 def main():
+  
+    logging.basicConfig(format='%(asctime)s - %(message)s',
+                        datefmt='%Y-%m-%d %H:%M:%S',
+                        level=logging.DEBUG)
     
+    config_file = "config.ini"
+      
     # Read config.ini file
     Config = ConfigParser()
-    Config.read("config_main.ini")
     
+    if os.path.isfile(config_file):
+        Config.read(config_file)
+    else:
+        logging.error('The config file {} not found'.format(config_file))
+        sys.exit(1)
+
     dbInfo = Config["DBINFO"]
     backupConf = Config["BACKUP_CONF"]
 
     archive_type = backupConf.get('archive_type')
-    notification_channel = backupConf.get('notification_channel')  
+    notification_channel = backupConf.get('notification_channel')
 
-    logging.basicConfig(format='%(asctime)s - %(message)s',
-                        datefmt='%Y-%m-%d %H:%M:%S',
-                        level=logging.DEBUG)
     
     # Initiate Backup
     backup_results = db_backup(dbInfo, backupConf)
@@ -211,8 +220,4 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
-
-    
     
