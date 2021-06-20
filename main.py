@@ -105,11 +105,18 @@ def expire_local_backup(backupConf):
     backup_dir = backupConf.get('backup_dir')
     retention_days = (backupConf.get('retention_days'))
     logging.debug("Finding backup stored older than '{}' day(s)".format(retention_days))
-    
+
+    expired_backup_files = []
     for file in os.listdir(backup_dir):
         if os.stat(os.path.join(backup_dir,file)).st_mtime < now - float(retention_days) * 86400:
-            logging.debug('Deleting local backup file: {}'. format(file))
-            os.remove(os.path.join(backup_dir, file))
+            expired_backup_files.append(os.path.join(backup_dir,file))
+            
+    if len(expired_backup_files):
+        for expired_backup_file in expired_backup_files:
+            os.remove(expired_backup_file)
+            logging.debug('Deleted local backup file: {}'. format(expired_backup_file))
+    else:
+        logging.debug('No expired backups found on {}'.format(backup_dir))
     
 
 def azure_blob(Config, file_name, dump_path, db):
@@ -208,16 +215,14 @@ def main():
             if backup_status == 'Success':
                 # Archive to Azure Blob
                 if 'blob' in archive_type.lower():
-                    azure_blob(Config, file_name, dump_path, db)  
-                
-                # Delete local Backup based on retention config
-                expire_local_backup(backupConf)       
-                
+                    azure_blob(Config, file_name, dump_path, db)    
             else:
                 # Slack Notification on Backup Failure
                 if 'slack' in notification_channel.lower():    
                     notification_slack(Config, db=db, task='Backup', status=backup_status)
 
+    # Delete local Backup based on retention config
+    expire_local_backup(backupConf)    
+
 if __name__ == "__main__":
     main()
-    
